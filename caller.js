@@ -28,6 +28,10 @@ var canvas = window.canvas = document.querySelector('canvas');
 canvas.width = 480;
 canvas.height = 360;
 
+
+var btn_desktop = document.querySelector('#btn_desktop');
+btn_desktop.addEventListener('click', onToggleDesktop);
+
 snapshotButton.onclick = function() {
     canvas.className = filterSelect.value;
     canvas.getContext('2d').drawImage(vid1, 0, 0, canvas.width, canvas.height);
@@ -123,6 +127,41 @@ function receiveAnswer(sdpString) {
         sdp: sdpString
     };
     local_peer.setRemoteDescription(descObject);
+}
+
+function startDesktop() {
+    if (window.stream) {
+        window.stream.getTracks().forEach(function(track) {
+          track.stop();
+        });
+    }
+
+    getScreenId((error, sourceId, screenConstraints) => {
+    if (error === 'not-installed') return alert('The extension is not installed');
+    if (error === 'permission-denied') return alert('Permission is denied.');
+    if (error === 'not-chrome') return alert('Please use chrome.');
+
+    navigator.mediaDevices.getUserMedia(screenConstraints)
+        .then(stream => {
+            window.stream = stream;
+            vid1.srcObject = stream;
+            localstream = stream;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    });
+}
+
+var isDesktop = false;
+function onToggleDesktop(){
+
+    if (isDesktop == false) {
+        startDesktop();
+    } else {
+        start();
+    }
+    isDesktop = !isDesktop;    
 }
 
 function onReceiveAnswer() {
