@@ -19,6 +19,33 @@ var btn_receiveAnswer = document.querySelector('#btn_receiveAnswer');
 btn_start.addEventListener('click', onStart);
 btn_finalOffer.addEventListener('click', onOffer);
 btn_receiveAnswer.addEventListener('click', onReceiveAnswer);
+
+var snapshotButton = document.querySelector('button#snapshot');
+var toggleMirrorButton = document.querySelector('button#toggle-mirror');
+var filterSelect = document.querySelector('select#filter');
+
+var canvas = window.canvas = document.querySelector('canvas');
+canvas.width = 480;
+canvas.height = 360;
+
+snapshotButton.onclick = function() {
+    canvas.className = filterSelect.value;
+    canvas.getContext('2d').drawImage(vid1, 0, 0, canvas.width, canvas.height);
+};
+
+filterSelect.onchange = function() {
+    vid1.className = filterSelect.value;
+};
+
+var vidClassName = '';
+toggleMirrorButton.onclick = function() {
+    if (!vidClassName)
+        vidClassName = 'mirror';
+    else 
+        vidClassName = '';
+    vid1.className = vidClassName;
+};
+
 // ---------------------------------------------------------------------------------
 
 // Value
@@ -54,7 +81,7 @@ function onStart() {
         iceServers: [
         ]
     };
-    cfg.iceServers.push({urls: "stun:stun.l.google.com:19302"});
+    // cfg.iceServers.push({urls: "stun:stun.l.google.com:19302"});
     local_peer = new RTCPeerConnection(cfg);
     local_peer.onicecandidate = function (evt) {
         cbIceCandidate(local_peer, evt);
